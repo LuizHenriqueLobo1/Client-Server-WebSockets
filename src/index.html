@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Socket.io</title>
+</head>
+<body>
+    <h2 id="my-id"></h2>
+    <div id="my-div" style="width: 100px; height: 100px;"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const client = io()
+        
+        client.on('connect', () => {
+            let myId = document.getElementById('my-id').textContent = `ID => ${client.id}`;
+            client.on('loadColor', (color) => {
+                changeColor(color);
+            })
+        });
+
+        document.getElementById('my-div').addEventListener('click', () => {
+            color = generateRandomColor();
+            changeColor(color);
+            client.emit('sendColor', color);
+        });
+
+        function generateRandomColor() {
+            colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple', 'grey'];
+            color  = colors[Math.floor(Math.random() * colors.length)];
+            return color;
+        }
+
+        function changeColor(color) {
+            let myDiv = document.getElementById('my-div').style.backgroundColor = color;
+        }
+
+        client.on('updateColor', (color) => {
+            changeColor(color);    
+        });
+    </script>
+</body>
+</html>
